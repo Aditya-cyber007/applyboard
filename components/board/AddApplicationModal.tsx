@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,7 +43,7 @@ export function AddApplicationModal({ open, onClose }: Props) {
       setForm({ company: '', role: '', status: 'applied', job_url: '', salary: '', location: '', notes: '' })
       onClose()
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to add application')
+      toast.error(err instanceof Error ? err.message : 'Failed to add application')
     } finally {
       setLoading(false)
     }

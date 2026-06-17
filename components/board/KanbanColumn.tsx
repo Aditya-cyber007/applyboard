@@ -17,7 +17,7 @@ export function KanbanColumn({ id, label, color, applications, onDelete, onAnaly
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
-    <div className="flex flex-col w-64 flex-shrink-0">
+    <div className="flex flex-col min-w-0">
       {/* Column header */}
       <div className={`${color} text-white px-3 py-1.5 rounded-t-lg flex items-center justify-between`}>
         <span className="text-sm font-semibold">{label}</span>
@@ -29,7 +29,7 @@ export function KanbanColumn({ id, label, color, applications, onDelete, onAnaly
       {/* Drop zone */}
       <div
         ref={setNodeRef}
-        className={`flex-1 min-h-48 rounded-b-lg p-2 transition-colors
+        className={`flex-1 min-h-40 rounded-b-lg p-2 transition-colors overflow-y-auto
           ${isOver ? 'bg-blue-50 border-2 border-blue-300 border-dashed border-t-0' : 'bg-gray-100'}`}
       >
         {applications.map((app) => (

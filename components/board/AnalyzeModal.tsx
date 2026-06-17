@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Application } from '@/lib/types'
 import { useBoardStore } from '@/lib/store'
 import { Sparkles } from 'lucide-react'
+import { PdfDropZone } from './PdfDropZone'
 
 interface Props {
   app: Application | null
@@ -65,7 +65,13 @@ export function AnalyzeModal({ app, onClose }: Props) {
         ai_summary: data.summary,
       })
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Analysis failed')
+      const msg = err instanceof Error ? err.message : 'Analysis failed'
+      const isQuota = msg.toLowerCase().includes('quota') || msg.includes('429')
+      toast.error(isQuota
+        ? 'Gemini quota exceeded — get a free key at aistudio.google.com/app/apikey then restart the server'
+        : msg,
+        { duration: 8000 }
+      )
     } finally {
       setLoading(false)
     }
@@ -96,24 +102,18 @@ export function AnalyzeModal({ app, onClose }: Props) {
 
         {!result ? (
           <div className="space-y-4 mt-2">
-            <div className="space-y-1">
-              <Label>Job Description</Label>
-              <Textarea
-                value={jd}
-                onChange={(e) => setJd(e.target.value)}
-                rows={6}
-                placeholder="Paste the full job description here..."
-              />
-            </div>
-            <div className="space-y-1">
-              <Label>Your Resume (plain text)</Label>
-              <Textarea
-                value={resume}
-                onChange={(e) => setResume(e.target.value)}
-                rows={6}
-                placeholder="Paste your resume as plain text here..."
-              />
-            </div>
+            <PdfDropZone
+              label="Job Description"
+              value={jd}
+              onChange={setJd}
+              placeholder="Paste the full job description here..."
+            />
+            <PdfDropZone
+              label="Your Resume"
+              value={resume}
+              onChange={setResume}
+              placeholder="Paste your resume as plain text here..."
+            />
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={handleClose}>Cancel</Button>
               <Button onClick={handleAnalyze} disabled={loading || !jd.trim() || !resume.trim()}>
